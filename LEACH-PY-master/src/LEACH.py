@@ -151,22 +151,22 @@ class LEACHSimulation:
         self.__main_loop()
 
         # Todo: all plotting should be done in Leach_plotter file
-        # plt.xlim(left=0, right=self.my_model.rmax)
-        # plt.ylim(bottom=0, top=self.n)
-        # plt.plot(self.alive_sensors)
-        # plt.title("Life time of sensor nodes")
-        # plt.xlabel('Rounds')
-        # plt.ylabel('No. of live nodes')
-        # # plt.ioff()
-        # plt.show()
-        #
-        # plt.xlim(left=0, right=self.my_model.rmax)
-        # plt.ylim(bottom=0, top=self.n * self.my_model.Eo)
-        # plt.plot(self.sum_energy_left_all_nodes)
-        # plt.title("Total residual energy ")
-        # plt.xlabel('Rounds')
-        # plt.ylabel('Energy (J)')
-        # plt.show()
+        plt.xlim(left=0, right=self.my_model.rmax)
+        plt.ylim(bottom=0, top=self.n)
+        plt.plot(self.alive_sensors)
+        plt.title("Life time of sensor nodes")
+        plt.xlabel('Rounds')
+        plt.ylabel('No. of live nodes')
+        # plt.ioff()
+        plt.show()
+        
+        plt.xlim(left=0, right=self.my_model.rmax)
+        plt.ylim(bottom=0, top=self.n * self.my_model.Eo)
+        plt.plot(self.sum_energy_left_all_nodes)
+        plt.title("Total residual energy ")
+        plt.xlabel('Rounds')
+        plt.ylabel('Energy (J)')
+        plt.show()
 
         # ##############################################
         # ############# END of simulation ##############
