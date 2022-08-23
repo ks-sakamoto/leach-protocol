@@ -1,2 +1,5 @@
 # leach-protocol
  leachプロトコル実装検討用のリポジトリ
+
+ leachプロトコルの実装がmicropythonで使用できるように修正する
+ 最終的に使用する実装のみresearch-fversionに移動する予定
