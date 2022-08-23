@@ -6,7 +6,11 @@
 
  *検討する実装一覧*
  - pashashahbaz/leach: leach is a routing protocol in wireless sensor network which is used to extend the lifetime of wireless sensor network by reducing the energy consumption. (github.com)
-   - 使えそうだけど修正が必要
+   - ~~使えそうだけど修正が必要~~
+   - ~~Energy2.py,line 99/FindReceiver2.py,line 16/でエラーが出る~~
+   - ~~tuple indices must be integers or slices, not str~~
+   - エラーは修正できたが、実装としては微妙
+   - 変数名の単純なミスなどが多すぎる、グラフも変な感じ、作成者は動作確認していないのでは？
  - HritwikSinghal/LEACH-PY: Leach code in Python (github.com)
  - zerokay/LEACH: WSN の LEACH ルーティングプロトコル (github.com)
  - bernardkkt/wsn-leach: Assignment for WSN on LEACH protocol and its improvements (github.com)
