@@ -5,10 +5,11 @@ Created on Wed Apr 21 12:03:34 2021
 @author: 91750
 """
 
-def find(Sensors,Model,Receiver,Sender):
-    n=Model['n']
+
+def find(Sensors, Model, Receiver, Sender):
+    n = Model['n']
     for i in range(n):
-        if Sensors['MCH'][i]==Receiver[0] and Sensors['id'][i]==Receiver[0]:
-            Sender.append(Sensors['id'][i])
-            
+        if Sensors['MCH'][i] == Receiver[0] and Sensors['ids'][i] == Receiver[0]:
+            Sender.append(Sensors['ids'][i])
+
     return Sender
