@@ -6,6 +6,12 @@
  
  <br/>
 
+*使えそうな実装*
+1. zerokay/LEACH-master: WSN の LEACH ルーティングプロトコル (github.com)
+2. HritwikSinghal/LEACH-PY: Leach code in Python (github.com)
+3. bernardkkt/wsn-leach: Assignment for WSN on LEACH protocol and its improvements (github.com)
+
+---
  *検討する実装一覧*
  - pashashahbaz/leach-main: leach is a routing protocol in wireless sensor network which is used to extend the lifetime of wireless sensor network by reducing the energy consumption. (github.com)
    - ~~使えそうだけど修正が必要~~
