@@ -6,7 +6,7 @@ class WSN(object):
     """ The network architecture with desired parameters """
     xm = 200  # Length of the yard
     ym = 200  # Width of the yard
-    n = 100  # total number of nodes
+    n = 20  # total number of nodes
     sink = None  # Sink node
     nodes = None  # All sensor nodes set
     # Energy model (all values in Joules)
@@ -120,14 +120,14 @@ class Node(object):
 class Leach(object):
     """ Leach """
     # Optimal selection probablitity of a node to become cluster head
-    p = 0.1  # 选为簇头概率 クラスタヘッドの確率
+    p = 0.2  # 选为簇头概率 クラスタヘッドの確率
     period = int(1/p)  # 周期 クラスタヘッドが1週する周期
     heads = None  # 簇头节点列表 クラスタヘッドのノードリスト
     members = None  # 非簇头成员列表 非クラスタヘッドのノードリスト
     # 簇类字典 :{"簇头1":[簇成员],"簇头2":[簇成员],...} クラスタクラス辞書:{"CH1":[クラスタメンバ], "CH2":[クラスタメンバ], "CH3":[...}
     cluster = None
     r = 0  # 当前轮数 現在のラウンド数
-    rmax = 1200  # 9999 # default maximum round
+    rmax = 10  # 9999 # default maximum round
     r_empty = 0  # 空轮
 
     def optimum_number_of_clusters():
@@ -172,6 +172,7 @@ class Leach(object):
                         # 该节点被选为簇头，广播此消息
                         # このノードはCHとして選択され、このメッセージをブロードキャストする
                         # Announce cluster-head status, wait for join-request messages
+                        print('クラスタヘッドに選択された後、ブロードキャストする')
                         max_dis = math.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
                         nodes[i].energy -= WSN.trans_energy(WSN.CM, max_dis)
                         # 节点有可能死亡 ノードが死亡する危険性がある
@@ -208,6 +209,7 @@ class Leach(object):
         # print("只有簇头的分类字典:", cluster)
         # 遍历非簇头节点，建立簇
         # 非CHのノードを走査して、クラスタを形成する
+        print('CHへ参加メッセージを送信する')
         for member in members:
             # 选取距离最小的节点
             # 距離が最少のノードを選択する
@@ -240,6 +242,7 @@ class Leach(object):
         # 为簇中每个节点分配向其传递数据的时间点
         # クラスタ内の各ノードにデータを送信する時間帯を割り当てる（スケジューリングのステップ）
         # Create a TDMA schedule and this schedule is broadcast back to the nodes in the cluster.
+        print('クラスタメンバに送信スケジュールを送信する')
         for key, values in cluster.items():
             head = nodes[int(key)]
             if not values:
@@ -273,6 +276,7 @@ class Leach(object):
             n_member = len(values)  # 簇成员数量 クラスタメンバ数
             # 簇中成员向簇头节点发送数据
             # クラスタ内のメンバがCHにデータを送信する
+            print('クラスタのメンバがCHにデータを送信する')
             for x in values:
                 member = nodes[int(x)]
                 dis = WSN.dist(member, head)
@@ -282,9 +286,11 @@ class Leach(object):
             # The distance of from head to sink
             d_h2s = WSN.dist(head, WSN.sink)
             if n_member == 0:  # 如果没有簇成员,只有簇头收集自身信息发送给基站 クラスタメンバがいない場合はCHのみが情報をシンクに送信する
+                print('メンバがいない場合CHのみがシンクに送信する')
                 energy = WSN.trans_energy(WSN.DM, d_h2s)
             else:
                 # 加上簇头本身收集的数据，进行融合后的新的数据包 クラスタメンバのデータとCHのデータを融合したnew_data
+                print('クラスタメンバのデータを融合してCHがシンクに送信する')
                 new_data = WSN.DM * (n_member + 1)
                 E_DA = WSN.EDA * new_data  # 聚合数据的能量消耗 集計データのエネルギー消費量
                 if WSN.f_r == 0:  # f_r为0代表数据完美融合 完全なデータ融合の場合, f_rは0になる
