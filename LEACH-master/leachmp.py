@@ -1,19 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-'''=================================================
-@Title  ：Leach for WSN
-@Author ：Kay
-@Date   ：2019-09-27
-=================================================='''
-import numpy as np
-import matplotlib.pyplot as plt
-
-# 如遇中文显示问题可加入以下代码
-# 中国語の表示に問題がある場合は、以下のコードを追加できる
-from pylab import mpl
-mpl.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体　デフォルトのフォントを指定
-# 解决保存图像是负号'-'显示为方块的问题　画像保存時にマイナス記号"-"の文字化け問題を解決
-mpl.rcParams['axes.unicode_minus'] = False
+import math
+import random
 
 
 class WSN(object):
@@ -40,7 +26,7 @@ class WSN(object):
     CM = 32     # 控制信息大小/bit 制御メッセージサイズ/bit
     DM = 4096   # 数据信息大小/bit データサイズ/bit
     # computation of do
-    do = np.sqrt(Efs / Emp)  # 87.70580193070293
+    do = math.sqrt(Efs / Emp)  # 87.70580193070293
 
     # 恶意传感器节点
     # 悪意ある?センサーノード数
@@ -58,8 +44,8 @@ class WSN(object):
     def dist(x, y):
         """ 判断两个节点之间的一维距离 """
         """ 2つのノード間の1次元距離を決定する """
-        distance = np.sqrt(np.power((x.xm - y.xm), 2) +
-                           np.power((x.ym - y.ym), 2))
+        distance = math.sqrt(math.pow((x.xm - y.xm), 2) +
+                             math.pow((x.ym - y.ym), 2))
         return distance
 
     def trans_energy(data, dis):
@@ -97,8 +83,8 @@ class Node(object):
     def __init__(self):
         """ Create the node with default attributes """
         self.id = None  # 节点编号
-        self.xm = np.random.random() * WSN.xm
-        self.ym = np.random.random() * WSN.ym
+        self.xm = random.random() * WSN.xm  # np.random.random()は0以上1未満のランダムな浮動小数点を返す
+        self.ym = random.random() * WSN.ym
         self.energy = Node.energy_init
         self.type = "N"  # "N" = Node (Non-CH):点类型为普通节点
         # G is the set of nodes that have not been cluster-heads in the last 1/p rounds.
@@ -130,86 +116,29 @@ class Node(object):
             node.id = WSN.n + i
             WSN.nodes.append(node)
 
-    def plot_wsn():
-        nodes = WSN.nodes
-        n = WSN.n
-        m_n = WSN.m_n
-        # base station
-        sink = WSN.sink
-        # plt.plot([sink.xm], [sink.ym], 'r^',label="基站")
-        plt.plot([sink.xm], [sink.ym], 'r^', label="シンク")
-        # 正常节点
-        n_flag = True
-        for i in range(n):
-            if n_flag:
-                # plt.plot([nodes[i].xm], [nodes[i].ym], 'b+',label='正常节点')
-                plt.plot([nodes[i].xm], [nodes[i].ym], 'b+', label='通常のノード')
-                n_flag = False
-            else:
-                plt.plot([nodes[i].xm], [nodes[i].ym], 'b+')
-        # 恶意节点
-        m_flag = True
-        for i in range(m_n):
-            j = n + i
-            if m_flag:
-                # plt.plot([nodes[j].xm], [nodes[j].ym], 'kd',label='恶意节点')
-                plt.plot([nodes[j].xm], [nodes[j].ym], 'kd', label='悪意あるノード')
-                m_flag = False
-            else:
-                plt.plot([nodes[j].xm], [nodes[j].ym], 'kd')
-        plt.legend()
-        plt.xlabel('X/m')
-        plt.ylabel('Y/m')
-        plt.show()
-
 
 class Leach(object):
     """ Leach """
     # Optimal selection probablitity of a node to become cluster head
     p = 0.1  # 选为簇头概率 クラスタヘッドの確率
-    period = int(1/p)  # 周期 ラウンドのこと?
+    period = int(1/p)  # 周期 クラスタヘッドが1週する周期
     heads = None  # 簇头节点列表 クラスタヘッドのノードリスト
     members = None  # 非簇头成员列表 非クラスタヘッドのノードリスト
     # 簇类字典 :{"簇头1":[簇成员],"簇头2":[簇成员],...} クラスタクラス辞書:{"CH1":[クラスタメンバ], "CH2":[クラスタメンバ], "CH3":[...}
     cluster = None
     r = 0  # 当前轮数 現在のラウンド数
-    rmax = 5  # 9999 # default maximum round
+    rmax = 1200  # 9999 # default maximum round
     r_empty = 0  # 空轮
-
-    def show_cluster():
-        fig = plt.figure()
-        # 设置标题 タイトルを設定
-        # 设置X轴标签 x軸のラベルを設定
-        plt.xlabel('X/m')
-        # 设置Y轴标签 y軸のラベルを設定
-        plt.ylabel('Y/m')
-        icon = ['o', '*', '.', 'x', '+', 's']
-        color = ['r', 'b', 'g', 'c', 'y', 'm']
-        # 对每个簇分类列表进行show クラスタの分類ごとに表示
-        i = 0
-        nodes = WSN.nodes
-        for key, value in Leach.cluster.items():
-            cluster_head = nodes[int(key)]
-            # print("第", i + 1, "类聚类中心为:", cluster_head)
-            for index in value:
-                plt.plot([cluster_head.xm, nodes[index].xm], [cluster_head.ym, nodes[index].ym],
-                         c=color[i % 6], marker=icon[i % 5], alpha=0.4)
-                # 如果是恶意节点 悪意あるノードの場合
-                if index >= WSN.n:
-                    plt.plot([nodes[index].xm], [nodes[index].ym], 'dk')
-            i += 1
-        # 显示所画的图 図を表示
-        plt.show()
 
     def optimum_number_of_clusters():
         """ 完美融合下的最优簇头数量 """
         """ 完全融合の下での最適なクラスタヘッド数"""
         N = WSN.n - WSN.n_dead
-        M = np.sqrt(WSN.xm * WSN.ym)
-        d_toBS = np.sqrt((WSN.sink.xm - WSN.xm) ** 2 +
-                         (WSN.sink.ym - WSN.ym) ** 2)
-        k_opt = (np.sqrt(N) / np.sqrt(2 * np.pi) *
-                 np.sqrt(WSN.Efs / WSN.Emp) *
+        M = math.sqrt(WSN.xm * WSN.ym)
+        d_toBS = math.sqrt((WSN.sink.xm - WSN.xm) ** 2 +
+                           (WSN.sink.ym - WSN.ym) ** 2)
+        k_opt = (math.sqrt(N) / math.sqrt(2 * math.pi) *
+                 math.sqrt(WSN.Efs / WSN.Emp) *
                  M / (d_toBS ** 2))
         p = int(k_opt) / N
         return p
@@ -225,13 +154,13 @@ class Leach(object):
         r = Leach.r
         period = Leach.period
         Tn = p / (1 - p * (r % period))  # 閾値Tn
-        print(Leach.r, Tn)
+        print('round: {0}, Tn: {1}'.format(Leach.r, Tn))
         for i in range(n):
             # After the energy dissipated in a given node reached a set threshold,
             # that node was considered dead for the remainder of the simulation.
             if nodes[i].energy > Node.energy_threshold:  # 节点未死亡 ノードが死んでいない
                 if nodes[i].G == 0:  # 此周期内节点未被选为簇头 このサイクルではノードはCHとして選択されていない
-                    temp_rand = np.random.random()
+                    temp_rand = random.random()
 #                    print(temp_rand)
                     # 随机数低于阈值节点被选为簇头
                     # 閾値以下のランダムな数のノードがCHとして選択される
@@ -243,7 +172,7 @@ class Leach(object):
                         # 该节点被选为簇头，广播此消息
                         # このノードはCHとして選択され、このメッセージをブロードキャストする
                         # Announce cluster-head status, wait for join-request messages
-                        max_dis = np.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
+                        max_dis = math.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
                         nodes[i].energy -= WSN.trans_energy(WSN.CM, max_dis)
                         # 节点有可能死亡 ノードが死亡する危険性がある
                 if nodes[i].type == "N":  # 该节点非簇头节点 クラスタヘッドでないノード
@@ -283,7 +212,7 @@ class Leach(object):
             # 选取距离最小的节点
             # 距離が最少のノードを選択する
             # 簇头节点区域内的广播半径 クラスタヘッド領域におけるブロードキャストの半径
-            min_dis = np.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
+            min_dis = math.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
             head_id = None
             # 接收所有簇头的信息
             # 全てのクラスタヘッドから情報を受信する
@@ -315,7 +244,7 @@ class Leach(object):
             head = nodes[int(key)]
             if not values:
                 # If there are cluster members, the CH sends schedule by broadcasting
-                max_dis = np.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
+                max_dis = math.sqrt(WSN.xm ** 2 + WSN.ym ** 2)
                 head.energy -= WSN.trans_energy(WSN.CM, max_dis)
                 for x in values:
                     member = nodes[int(x)]
@@ -387,15 +316,13 @@ class Leach(object):
             Leach.leach()
             WSN.node_state(r)
             if WSN.flag_all_dead:
-                print("==============================")
+                print("------------------------------")
                 break
-            Leach.show_cluster()
 
 
 def main():
     Node.init_nodes()
     Node.init_malicious_nodes()
-    Node.plot_wsn()
     Leach.run_leach()
     # print("The first node died in Round %d!" % (WSN.round_first_dead))
     # print("The network stop working in Round %d!" % (WSN.round_net_stop))
