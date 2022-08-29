@@ -137,13 +137,14 @@ class Node(object):
         # base station
         sink = WSN.sink
         # plt.plot([sink.xm], [sink.ym], 'r^',label="基站")
-        plt.plot([sink.xm], [sink.ym], 'r^', label="シンク")
+        plt.plot([sink.xm], [sink.ym], 'r^', label="sink")
         # 正常节点
         n_flag = True
         for i in range(n):
             if n_flag:
                 # plt.plot([nodes[i].xm], [nodes[i].ym], 'b+',label='正常节点')
-                plt.plot([nodes[i].xm], [nodes[i].ym], 'b+', label='通常のノード')
+                plt.plot([nodes[i].xm], [nodes[i].ym],
+                         'b+', label='healthy node')
                 n_flag = False
             else:
                 plt.plot([nodes[i].xm], [nodes[i].ym], 'b+')
@@ -153,7 +154,8 @@ class Node(object):
             j = n + i
             if m_flag:
                 # plt.plot([nodes[j].xm], [nodes[j].ym], 'kd',label='恶意节点')
-                plt.plot([nodes[j].xm], [nodes[j].ym], 'kd', label='悪意あるノード')
+                plt.plot([nodes[j].xm], [nodes[j].ym],
+                         'kd', label='malicious node')
                 m_flag = False
             else:
                 plt.plot([nodes[j].xm], [nodes[j].ym], 'kd')
@@ -167,13 +169,13 @@ class Leach(object):
     """ Leach """
     # Optimal selection probablitity of a node to become cluster head
     p = 0.1  # 选为簇头概率 クラスタヘッドの確率
-    period = int(1/p)  # 周期 ラウンドのこと?
+    period = int(1/p)  # 周期 クラスタヘッドが1周する周期
     heads = None  # 簇头节点列表 クラスタヘッドのノードリスト
     members = None  # 非簇头成员列表 非クラスタヘッドのノードリスト
     # 簇类字典 :{"簇头1":[簇成员],"簇头2":[簇成员],...} クラスタクラス辞書:{"CH1":[クラスタメンバ], "CH2":[クラスタメンバ], "CH3":[...}
     cluster = None
     r = 0  # 当前轮数 現在のラウンド数
-    rmax = 5  # 9999 # default maximum round
+    rmax = 20  # 9999 # default maximum round
     r_empty = 0  # 空轮
 
     def show_cluster():
@@ -225,7 +227,7 @@ class Leach(object):
         r = Leach.r
         period = Leach.period
         Tn = p / (1 - p * (r % period))  # 閾値Tn
-        print(Leach.r, Tn)
+        print('round: {0}, Tn: {1}'.format(Leach.r, Tn))
         for i in range(n):
             # After the energy dissipated in a given node reached a set threshold,
             # that node was considered dead for the remainder of the simulation.
