@@ -8,7 +8,7 @@ class WSN(object):
     """ WSNのネットワークパラメータの設定(シミュレーションのため、パラメータが必要となる) """
     xm = 200  # Length of the yard
     ym = 200  # Width of the yard
-    n = 20  # total number of nodes
+    n = 2  # total number of nodes
     sink = None  # Sink node
     nodes = None  # All sensor nodes set
     # Energy model (all values in Joules)
@@ -111,7 +111,7 @@ class Node(object):
 class Leach(object):
     """ Leach """
     # Optimal selection probablitity of a node to become cluster head
-    p = 0.2  # 选为簇头概率 クラスタヘッドの確率
+    p = 0.5  # 选为簇头概率 クラスタヘッドの確率
     period = int(1/p)  # 周期 クラスタヘッドが1週する周期
     heads = None  # 簇头节点列表 クラスタヘッドのノードリスト
     members = None  # 非簇头成员列表 非クラスタヘッドのノードリスト
@@ -120,19 +120,6 @@ class Leach(object):
     r = 0  # 当前轮数 現在のラウンド数
     rmax = 10  # 9999 # default maximum round
     r_empty = 0  # 空轮
-
-    def optimum_number_of_clusters():
-        """ 完美融合下的最优簇头数量 """
-        """ 完全融合の下での最適なクラスタヘッド数"""
-        N = WSN.n - WSN.n_dead
-        M = math.sqrt(WSN.xm * WSN.ym)
-        d_toBS = math.sqrt((WSN.sink.xm - WSN.xm) ** 2 +
-                           (WSN.sink.ym - WSN.ym) ** 2)
-        k_opt = (math.sqrt(N) / math.sqrt(2 * math.pi) *
-                 math.sqrt(WSN.Efs / WSN.Emp) *
-                 M / (d_toBS ** 2))
-        p = int(k_opt) / N
-        return p
 
     def cluster_head_selection():
         """ 根据阈值选择簇头节点 """
@@ -169,10 +156,6 @@ class Leach(object):
                         # 节点有可能死亡 ノードが死亡する危険性がある
                 if nodes[i].type == "N":  # 该节点非簇头节点 クラスタヘッドでないノード
                     members.append(nodes[i])
-        m_n = WSN.m_n
-        for i in range(m_n):
-            j = n + i
-            members.append(nodes[j])
         # 如果本轮未找到簇头
         # このラウンドでクラスタヘッドが見つからなかった場合
         if not heads:
@@ -320,7 +303,6 @@ class Leach(object):
 def main():
     gc.enable()
     Node.init_nodes()
-    Node.init_malicious_nodes()
     Leach.run_leach()
     # print("The first node died in Round %d!" % (WSN.round_first_dead))
     # print("The network stop working in Round %d!" % (WSN.round_net_stop))
