@@ -1,9 +1,11 @@
 import math
 import random
+import gc
 
 
 class WSN(object):
     """ The network architecture with desired parameters """
+    """ WSNのネットワークパラメータの設定(シミュレーションのため、パラメータが必要となる) """
     xm = 200  # Length of the yard
     ym = 200  # Width of the yard
     n = 20  # total number of nodes
@@ -27,10 +29,6 @@ class WSN(object):
     DM = 4096   # 数据信息大小/bit データサイズ/bit
     # computation of do
     do = math.sqrt(Efs / Emp)  # 87.70580193070293
-
-    # 恶意传感器节点
-    # 悪意ある?センサーノード数
-    m_n = 3  # the number of malicious sensor nodes
 
     # Node State in Network
     n_dead = 0  # The number of dead nodes
@@ -84,11 +82,11 @@ class Node(object):
         """ Create the node with default attributes """
         self.id = None  # 节点编号
         self.xm = random.random() * WSN.xm  # np.random.random()は0以上1未満のランダムな浮動小数点を返す
-        self.ym = random.random() * WSN.ym
+        self.ym = random.random() * WSN.ym  #
         self.energy = Node.energy_init
         self.type = "N"  # "N" = Node (Non-CH):点类型为普通节点
         # G is the set of nodes that have not been cluster-heads in the last 1/p rounds.
-        self.G = 0  # the flag determines whether it's a CH or not:每一周期此标志为0表示未被选为簇头，1代表被选为簇头 フラグが0の場合は非CH, 1の場合はCHとして選択されている
+        self.G = 0  # the flag determines whether it's a CH or not:每一周期此标志为0表示未被选为簇头，1代表被选为簇头 フラグが0の場合は非CH, 1の場合はCHとして選択されたことを示す
         # The id of its CH：隶属的簇, None代表没有加入任何簇 所属するクラスタ, Noneはクラスタに属していないことを意味する
         self.head_id = None
 
@@ -108,13 +106,6 @@ class Node(object):
         # Add to WSN
         WSN.nodes = nodes
         WSN.sink = sink
-
-    def init_malicious_nodes():
-        """ Initialize attributes of every malicious node in order """
-        for i in range(WSN.m_n):
-            node = Node()
-            node.id = WSN.n + i
-            WSN.nodes.append(node)
 
 
 class Leach(object):
@@ -327,6 +318,7 @@ class Leach(object):
 
 
 def main():
+    gc.enable()
     Node.init_nodes()
     Node.init_malicious_nodes()
     Leach.run_leach()
